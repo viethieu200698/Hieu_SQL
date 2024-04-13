@@ -23,6 +23,7 @@ CREATE TABLE Teachers (
     LastName VARCHAR(50),
     Subject VARCHAR(50)
 );
+-- Thêm dữ liệu
 -- Thêm dữ liệu cho bảng Classes
 INSERT INTO Classes (ClassID, ClassName, TeacherID) VALUES
 (1, 'Toán học', 1),
@@ -79,10 +80,9 @@ BEGIN
     WHERE c.ClassID = ClassID AND t.Subject = Subject;
 END$$
 DELIMITER ;
--- Tạo View
+-- Tạo view
 CREATE VIEW StudentsWithClassAndTeacher AS
 SELECT s.FirstName, s.LastName, c.ClassName, t.FirstName AS TeacherFirstName, t.LastName AS TeacherLastName
 FROM Students s
 JOIN Classes c ON s.ClassID = c.ClassID
 JOIN Teachers t ON c.TeacherID = t.TeacherID;
-

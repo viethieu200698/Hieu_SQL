@@ -1,0 +1,88 @@
+-- Bảng Students
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    ClassID INT,
+    BirthDate DATE,
+    FOREIGN KEY (ClassID) REFERENCES Classes(ClassID)
+);
+
+-- Bảng Classes
+CREATE TABLE Classes (
+    ClassID INT PRIMARY KEY,
+    ClassName VARCHAR(50),
+    TeacherID INT,
+    FOREIGN KEY (TeacherID) REFERENCES Teachers(TeacherID)
+);
+
+-- Bảng Teachers
+CREATE TABLE Teachers (
+    TeacherID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Subject VARCHAR(50)
+);
+-- Thêm dữ liệu cho bảng Classes
+INSERT INTO Classes (ClassID, ClassName, TeacherID) VALUES
+(1, 'Toán học', 1),
+(2, 'Vật lí', 2),
+(3, 'Lịch sử', 3),
+(4, 'Ngữ văn', 4),
+(5, 'Mỹ thuật', 5);
+
+-- Thêm dữ liệu cho bảng Students
+INSERT INTO Students (StudentID, FirstName, LastName, ClassID, BirthDate) VALUES
+(1, 'An', 'Nguyễn', 1, '2005-03-15'),
+(2, 'Bình', 'Trần', 2, '2004-08-21'),
+(3, 'Chi', 'Lê', 3, '2002-11-10'),
+(4, 'Duy', 'Phạm', 4, '2003-05-27'),
+(5, 'Hải', 'Hoàng', 5, '2006-02-08'),
+(6, 'Hà', 'Vũ', 1, '2005-07-18'),
+(7, 'Hưng', 'Đặng', 2, '2001-09-30'),
+(8, 'Hạnh', 'Lý', 3, '2004-04-12'),
+(9, 'Khoa', 'Bùi', 4, '2002-12-03'),
+(10, 'Linh', 'Mai', 5, '2003-10-24');
+
+-- Thêm dữ liệu cho bảng Teachers
+INSERT INTO Teachers (TeacherID, FirstName, LastName, Subject) VALUES
+(1, 'Thầy', 'Nguyễn', 'Toán'),
+(2, 'Cô', 'Trần', 'Vật lí'),
+(3, 'Thầy', 'Lê', 'Lịch sử'),
+(4, 'Cô', 'Phạm', 'Ngữ văn'),
+(5, 'Thầy', 'Hoàng', 'Mỹ thuật');
+-- Câu truy vấn dữ liệu
+SELECT s.FirstName, s.LastName, c.ClassName, t.FirstName AS TeacherFirstName, t.LastName AS TeacherLastName
+FROM Students s
+JOIN Classes c ON s.ClassID = c.ClassID
+JOIN Teachers t ON c.TeacherID = t.TeacherID;
+-- Điều kiện truy vấn
+SELECT * FROM Students WHERE YEAR(BirthDate) >= 2000;
+-- Câu truy vấn JOIN
+SELECT s.FirstName, s.LastName, c.ClassName, t.FirstName AS TeacherFirstName, t.LastName AS TeacherLastName
+FROM Students s
+JOIN Classes c ON s.ClassID = c.ClassID
+JOIN Teachers t ON c.TeacherID = t.TeacherID
+ORDER BY s.LastName, s.FirstName;
+-- Cập nhật dữ liệu
+UPDATE Students SET FirstName = 'John', LastName = 'Doe' WHERE StudentID = 3;
+-- Xoá dữ liệu
+DELETE FROM Students WHERE StudentID = 7;
+-- Tạo thủ tục lưu trữ
+DELIMITER $$
+CREATE PROCEDURE GetStudentsByClassAndSubject(IN ClassID INT, IN Subject VARCHAR(50))
+BEGIN
+    SELECT s.FirstName, s.LastName
+    FROM Students s
+    JOIN Classes c ON s.ClassID = c.ClassID
+    JOIN Teachers t ON c.TeacherID = t.TeacherID
+    WHERE c.ClassID = ClassID AND t.Subject = Subject;
+END$$
+DELIMITER ;
+-- Tạo View
+CREATE VIEW StudentsWithClassAndTeacher AS
+SELECT s.FirstName, s.LastName, c.ClassName, t.FirstName AS TeacherFirstName, t.LastName AS TeacherLastName
+FROM Students s
+JOIN Classes c ON s.ClassID = c.ClassID
+JOIN Teachers t ON c.TeacherID = t.TeacherID;
+

@@ -1,1 +1,94 @@
+<?php
+// Kết nối tới cơ sở dữ liệu
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "database_name";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Kiểm tra kết nối
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Hàm để lấy danh sách các danh mục từ cơ sở dữ liệu
+function getCategories($conn) {
+    $sql = "SELECT * FROM categories";
+    $result = $conn->query($sql);
+    $categories = array();
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $categories[] = $row;
+        }
+    }
+    return $categories;
+}
+
+// Hàm để thêm một danh mục mới
+function addCategory($conn, $name, $description) {
+    $sql = "INSERT INTO categories (name, description) VALUES ('$name', '$description')";
+    if ($conn->query($sql) === TRUE) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Hàm để cập nhật một danh mục
+function updateCategory($conn, $id, $name, $description) {
+    $sql = "UPDATE categories SET name='$name', description='$description' WHERE id=$id";
+    if ($conn->query($sql) === TRUE) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Hàm để xóa một danh mục
+function deleteCategory($conn, $id) {
+    $sql = "DELETE FROM categories WHERE id=$id";
+    if ($conn->query($sql) === TRUE) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// Bắt đầu xử lý các yêu cầu từ giao diện người dùng
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Xử lý thêm mới danh mục
+    if ($_POST["action"] == "add") {
+        $name = $_POST["name"];
+        $description = $_POST["description"];
+        if(addCategory($conn, $name, $description)) {
+            echo "Thêm danh mục thành công!";
+        } else {
+            echo "Có lỗi xảy ra khi thêm danh mục!";
+        }
+    }
+
+    // Xử lý cập nhật danh mục
+    if ($_POST["action"] == "update") {
+        $id = $_POST["id"];
+        $name = $_POST["name"];
+        $description = $_POST["description"];
+        if(updateCategory($conn, $id, $name, $description)) {
+            echo "Cập nhật danh mục thành công!";
+        } else {
+            echo "Có lỗi xảy ra khi cập nhật danh mục!";
+        }
+    }
+
+    // Xử lý xóa danh mục
+    if ($_POST["action"] == "delete") {
+        $id = $_POST["id"];
+        if(deleteCategory($conn, $id)) {
+            echo "Xóa danh mục thành công!";
+        } else {
+            echo "Có lỗi xảy ra khi xóa danh mục!";
+        }
+    }
+}
+?>
 
